@@ -1,12 +1,19 @@
 package cache
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
-type Item struct {
-	value interface{}
+type item struct {
+	created    time.Time
+	expiration int64
+	value      interface{}
 }
 
 type Cache struct {
 	sync.RWMutex
-	Items map[string]Item
+	items             map[string]item
+	cleanupInterval   time.Duration
+	defaultExpiration time.Duration
 }

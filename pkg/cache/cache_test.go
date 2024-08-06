@@ -30,12 +30,12 @@ func TestCache_Set(t *testing.T) {
 			name: "case1",
 			performAction: func(p *Cache, testName string) {
 				for i, val := range testData[testName] {
-					p.Set(fmt.Sprintf("%d", i), val)
+					p.Set(fmt.Sprintf("%d", i), val, 0)
 				}
 			},
 			verifyResult: func(t *testing.T, p *Cache, testName string) {
 				for i, val := range expectedData[testName] {
-					eq, ok := p.Items[fmt.Sprintf("%d", i)]
+					eq, ok := p.items[fmt.Sprintf("%d", i)]
 					if !ok {
 						t.Errorf("item key: %v and value %v not found", i, val)
 					}
@@ -46,7 +46,7 @@ func TestCache_Set(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		p := New()
+		p := New(0, 0)
 		t.Run(test.name, func(t *testing.T) {
 			test.performAction(p, test.name)
 			test.verifyResult(t, p, test.name)
@@ -72,7 +72,7 @@ func TestCache_Get(t *testing.T) {
 			name: "case1",
 			performAction: func(p *Cache, testName string) {
 				for i, val := range testData[testName] {
-					p.Set(fmt.Sprintf("%d", i), val)
+					p.Set(fmt.Sprintf("%d", i), val, 0)
 				}
 			},
 			verifyResult: func(t *testing.T, p *Cache, testName string) {
@@ -88,7 +88,7 @@ func TestCache_Get(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		p := New()
+		p := New(0, 0)
 		t.Run(test.name, func(t *testing.T) {
 			test.performAction(p, test.name)
 			test.verifyResult(t, p, test.name)
@@ -123,7 +123,7 @@ func TestCache_Remove(t *testing.T) {
 			name: "case1",
 			performAction: func(p *Cache, testName string) {
 				for i, val := range testData[testName] {
-					p.Set(fmt.Sprintf("%d", i), val)
+					p.Set(fmt.Sprintf("%d", i), val, 0)
 				}
 				for _, val := range deleteData[testName] {
 					p.Remove(fmt.Sprintf("%d", val))
@@ -131,25 +131,25 @@ func TestCache_Remove(t *testing.T) {
 			},
 			verifyResult: func(t *testing.T, p *Cache, testName string) {
 				for _, val := range deleteData[testName] {
-					item, ok := p.Items[fmt.Sprintf("%d", val)]
+					item, ok := p.items[fmt.Sprintf("%d", val)]
 					if ok {
 						t.Errorf("item %v index %v after removal is present in items", item, val)
 					}
 				}
 				for _, val := range expectedData[testName] {
-					_, ok := p.Items[fmt.Sprintf("%d", val)]
+					_, ok := p.items[fmt.Sprintf("%d", val)]
 					if !ok {
 						t.Errorf("item key: %v not found", val)
 					}
 				}
-				assert.Equal(t, len(expectedData[testName]), len(p.Items))
+				assert.Equal(t, len(expectedData[testName]), len(p.items))
 			},
 		},
 		{
 			name: "case2",
 			performAction: func(p *Cache, testName string) {
 				for i, val := range testData[testName] {
-					p.Set(fmt.Sprintf("%d", i), val)
+					p.Set(fmt.Sprintf("%d", i), val, 0)
 				}
 
 				for i := range testData[testName] {
@@ -157,13 +157,13 @@ func TestCache_Remove(t *testing.T) {
 				}
 			},
 			verifyResult: func(t *testing.T, p *Cache, testName string) {
-				assert.Equal(t, len(expectedData[testName]), len(p.Items))
+				assert.Equal(t, len(expectedData[testName]), len(p.items))
 			},
 		},
 	}
 
 	for _, test := range tests {
-		p := New()
+		p := New(0, 0)
 		t.Run(test.name, func(t *testing.T) {
 			test.performAction(p, test.name)
 			test.verifyResult(t, p, test.name)
